@@ -5,6 +5,7 @@
     "start-gateway": "nodemon gateway.js",
     "start-service-exclusiveshowcase": "nodemon services/exclusiveShowcase/index.js",
     "start-service-listingssearch": "nodemon services/listingsSearch/index.js",
+    "start-service-parsewhere": "nodemon services/parseWhere/index.js",
     "start-services": "concurrently \"npm:start-service-*\"",
     "postinstall": "lerna bootstrap"
   },
