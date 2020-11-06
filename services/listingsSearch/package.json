@@ -1,0 +1,11 @@
+{
+  "name": "listingssearch",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "apollo-datasource-rest": "0.9.5",
+    "apollo-server": "2.x",
+    "graphql": "15.x"
+  }
+}
