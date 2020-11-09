@@ -1,4 +1,5 @@
-const { ApolloServer, gql, makeExecutableSchema } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server");
+const { buildFederatedSchema } = require("@apollo/federation");
 const ListingsSearchAPI = require("./data-source.js")
 const ParseWhere = require("../parseWhere/data-source.js")
 
@@ -9,7 +10,7 @@ const typeDefs = gql`
 
   scalar SearchQueryJson
 
-  type BuyResolvedSearch {
+  type BuyResolvedSearch @key(fields: "resolvedQuery") {
     results: BuySearchResults!
     resolvedQuery: ResolvedQuery!
   }
@@ -59,13 +60,31 @@ const resolvers = {
     }
   },
   BuyResolvedSearch: {
+    __resolveReference: async(buyResolvedSearch, { dataSources }) => {
+      const resolvedQuery = buyResolvedSearch.resolvedQuery;
+      const lsapiQuery = {
+        channel: "buy",
+        locationSearches: resolvedQuery.localities.map(
+          function(l) {
+            const locality = {atlasId: l.atlasId};
+            return locality;
+          }
+        )
+      };
+
+      return {
+        inputSearchQuery: lsapiQuery,
+        resolvedSearchQuery: resolvedQuery.localities
+      };
+    },
     resolvedQuery(buyResolvedSearch) {
       return {
         localities: buyResolvedSearch.resolvedSearchQuery
       };
     },
     results: async (buyResolvedSearch, _, { dataSources }) => {
-      return await dataSources.listingsSearchAPI.search(buyResolvedSearch.inputSearchQuery)
+      const response = await dataSources.listingsSearchAPI.search(buyResolvedSearch.inputSearchQuery);
+      return response.results;
     }
   },
   BuySearchResultsItem: {
@@ -76,7 +95,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  schema: makeExecutableSchema(
+  schema: buildFederatedSchema(
     {
       typeDefs,
       resolvers
