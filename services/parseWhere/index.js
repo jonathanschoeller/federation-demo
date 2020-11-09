@@ -16,13 +16,10 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    where: async(_, args, { dataSources }) => {
+    where: async (_, args, { dataSources }) => {
       const result = await dataSources.parseWhere.search(args.query);
       return result.matchedLocations;
     }
-  },
-  MatchedLocation: {
-
   }
 };
 
@@ -32,9 +29,9 @@ const server = new ApolloServer({
       typeDefs,
       resolvers
     }),
-    dataSources: () => ({
-      parseWhere: new ParseWhere()
-    })
+  dataSources: () => ({
+    parseWhere: new ParseWhere()
+  })
 });
 
 server.listen({ port: 4007 }).then(({ url }) => {
