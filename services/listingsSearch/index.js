@@ -43,7 +43,11 @@ const typeDefs = gql`
   type BuyListing {
     id: ListingId!
     description: String!
-    
+    listingCompany: ListingCompany @provides(fields: "id")
+  }
+
+  extend type ListingCompany @key(fields: "id") {
+    id: String! @external
   }
 
   scalar ListingId
@@ -63,6 +67,11 @@ const resolvers = {
   BuySearchResultsItem: {
     listing(buySearchResultsItem) {
       return buySearchResultsItem;
+    }
+  },
+  BuyListing: {
+    listingCompany(buyListing) {
+      return { __typename: "ListingCompany", id: buyListing.agency.id}
     }
   }
 };
