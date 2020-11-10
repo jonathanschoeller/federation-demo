@@ -42,7 +42,8 @@ const typeDefs = gql`
 
   type BuyListing {
     id: ListingId!
-    description: String! 
+    description: String!
+    
   }
 
   scalar ListingId
