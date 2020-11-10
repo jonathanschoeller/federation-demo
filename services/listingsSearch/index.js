@@ -10,7 +10,7 @@ const typeDefs = gql`
 
   scalar SearchQueryJson
 
-  type BuyResolvedSearch @key(fields: "resolvedQuery") {
+  type BuyResolvedSearch {
     results: BuySearchResults!
     resolvedQuery: ResolvedQuery!
   }
@@ -57,34 +57,6 @@ const resolvers = {
         inputSearchQuery: args.query,
         resolvedSearchQuery: result.matchedLocations
       }
-    }
-  },
-  BuyResolvedSearch: {
-    __resolveReference: async(buyResolvedSearch, { dataSources }) => {
-      const resolvedQuery = buyResolvedSearch.resolvedQuery;
-      const lsapiQuery = {
-        channel: "buy",
-        locationSearches: resolvedQuery.localities.map(
-          function(l) {
-            const locality = {atlasId: l.atlasId};
-            return locality;
-          }
-        )
-      };
-
-      return {
-        inputSearchQuery: lsapiQuery,
-        resolvedSearchQuery: resolvedQuery.localities
-      };
-    },
-    resolvedQuery(buyResolvedSearch) {
-      return {
-        localities: buyResolvedSearch.resolvedSearchQuery
-      };
-    },
-    results: async (buyResolvedSearch, _, { dataSources }) => {
-      const response = await dataSources.listingsSearchAPI.search(buyResolvedSearch.inputSearchQuery);
-      return response.results;
     }
   },
   BuySearchResultsItem: {
