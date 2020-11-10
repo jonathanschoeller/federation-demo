@@ -8,6 +8,7 @@ const gateway = new ApolloGateway({
   // prevents composition failures at runtime using schema validation using
   // real usage-based metrics.
   serviceList: [
+    { name: "listingssearch", url: "http://localhost:4001/graphql" },
     { name: "agencyapi", url: "http://localhost:4002/graphql" }
   ],
 

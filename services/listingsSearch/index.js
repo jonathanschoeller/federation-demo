@@ -1,4 +1,5 @@
-const { ApolloServer, gql, makeExecutableSchema } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server");
+const { buildFederatedSchema } = require("@apollo/federation");
 const ListingsSearchAPI = require("./data-source.js")
 
 const typeDefs = gql`
@@ -32,8 +33,8 @@ const typeDefs = gql`
     listingCompany: ListingCompany
   }
 
-  type ListingCompany {
-    id: String!
+  extend type ListingCompany {
+    id: String! @external
   }
 
   scalar ListingId
@@ -66,7 +67,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  schema: makeExecutableSchema(
+  schema: buildFederatedSchema(
     {
       typeDefs,
       resolvers
