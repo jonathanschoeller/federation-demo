@@ -1,4 +1,5 @@
-const { ApolloServer, gql, makeExecutableSchema } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server");
+const { buildFederatedSchema } = require("@apollo/federation");
 const AgencyAPI = require("./data-source.js");
 
 const typeDefs = gql`
@@ -6,7 +7,7 @@ const typeDefs = gql`
     agency(id: String!): ListingCompany
   }
 
-  type ListingCompany {
+  type ListingCompany @key(fields: "id") {
     id: String!
     name: String!
     businessPhone: String!
@@ -19,11 +20,16 @@ const resolvers = {
     agency: async(_, args, { dataSources }) => {
       return await dataSources.agencyApi.get(args.id);
     }
+  },
+  ListingCompany: {
+    __resolveReference: async(listingCompany, { dataSources }) => {
+      return await dataSources.agencyApi.get(listingCompany.id);
+    }
   }
 };
 
 const server = new ApolloServer({
-  schema: makeExecutableSchema(
+  schema: buildFederatedSchema(
     {
       typeDefs,
       resolvers

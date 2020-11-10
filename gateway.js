@@ -8,6 +8,7 @@ const gateway = new ApolloGateway({
   // prevents composition failures at runtime using schema validation using
   // real usage-based metrics.
   serviceList: [
+    { name: "agencyapi", url: "http://localhost:4002/graphql" }
   ],
 
   // Experimental: Enabling this enables the query plan view in Playground.
