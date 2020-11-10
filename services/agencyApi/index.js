@@ -1,5 +1,4 @@
-const { ApolloServer, gql } = require("apollo-server");
-const { buildFederatedSchema } = require("@apollo/federation");
+const { ApolloServer, gql, makeExecutableSchema } = require("apollo-server");
 const AgencyAPI = require("./data-source.js");
 
 const typeDefs = gql`
@@ -7,7 +6,7 @@ const typeDefs = gql`
     agency(id: String!): ListingCompany
   }
 
-  type ListingCompany @key(fields: "id") {
+  type ListingCompany {
     id: String!
     name: String!
     businessPhone: String!
@@ -20,16 +19,11 @@ const resolvers = {
     agency: async(_, args, { dataSources }) => {
       return await dataSources.agencyApi.get(args.id);
     }
-  },
-  ListingCompany: {
-    __resolveReference: async(listingCompany, { dataSources }) => {
-      return await dataSources.agencyApi.get(listingCompany.id);
-    }
   }
 };
 
 const server = new ApolloServer({
-  schema: buildFederatedSchema(
+  schema: makeExecutableSchema(
     {
       typeDefs,
       resolvers
@@ -39,7 +33,7 @@ const server = new ApolloServer({
     })
 });
 
-server.listen({ port: 4008 }).then(({ url }) => {
+server.listen({ port: 4002 }).then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
 
