@@ -46,7 +46,7 @@ const typeDefs = gql`
     listingCompany: ListingCompany @provides(fields: "id")
   }
 
-  extend type ListingCompany @key(fields: "id") {
+  extend type ListingCompany {
     id: String! @external
   }
 
