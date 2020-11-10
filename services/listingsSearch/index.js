@@ -64,6 +64,17 @@ const resolvers = {
       }
     }
   },
+  BuyResolvedSearch: {
+    resolvedQuery(buyResolvedSearch) {
+      return {
+        localities: buyResolvedSearch.resolvedSearchQuery
+      };
+    },
+    results: async (buyResolvedSearch, _, { dataSources }) => {
+      const response = await dataSources.listingsSearchAPI.search(buyResolvedSearch.inputSearchQuery);
+      return response.results;
+    }
+  },
   BuySearchResultsItem: {
     listing(buySearchResultsItem) {
       return buySearchResultsItem;
